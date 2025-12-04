@@ -1,3 +1,206 @@
-<h1>🔋 Desarrollo | Ejecución  </h1>
 
-<h2> Modelo entidad relación  </h2>
+Procederemos a crear las tablas  
+
+-- Tabla barcos -- 
+
+CREATE TABLE barcos( barco_id int AUTO_INCREMENT primary key, 
+
+nombre varchar (100), bandera varchar (50), capacidad_teu int, 
+capacidad_toneladas decimal (10,2), año_fabricacion year, 
+estado enum('Activo', 'En mantenimiento', 'Fuera de servicio'));  
+
+-- Tabla contenedores -- 
+
+CREATE TABLE contenedores( contenedor_id int AUTO_INCREMENT primary key, 
+codigo varchar (15), tipo enum ('20ft' , '40ft' , 'Reffer' , 'Open Top'), 
+peso_vacio decimal (10,2), peso_max decimal (10, 2), 
+estado enum('Disponible' , 'En transito' , 'Dañado' , 'Mantenimiento'), barco_id int, 
+FOREIGN KEY (barco_id) REFERENCES barcos(barco_id));  
+
+-- Tabla operaciones --  
+
+CREATE TABLE operaciones_portuarias( operacion_id INT AUTO_INCREMENT primary key, barco_id int, 
+contenedor_id int, puerto_origen varchar(100), puerto_destino varchar (100), fecha_salida DATE,
+fecha_arribo DATE, costo_operacion decimal (12,2),
+estado enum('Programada' , 'En transito' , 'Completada' , 'Retrasada'),
+FOREIGN KEY (barco_id) REFERENCES barcos(barco_id),
+FOREIGN KEY (contenedor_id) REFERENCES contenedores(contenedor_id)); 
+
+Análisis de negocio
+
+1. ¿Cuáles son las rutas más costosas y cuántas operaciones tienen?
+
+SELECT 
+    puerto_origen,
+    puerto_destino,
+    COUNT(*) AS total_operaciones,
+    SUM(costo_operacion) AS costo_total
+FROM operaciones_portuarias
+GROUP BY puerto_origen, puerto_destino;
+
++---------------+----------------+-------------------+-------------+
+| puerto_origen | puerto_destino | total_operaciones | costo_total |
++---------------+----------------+-------------------+-------------+
+| Valencia      | Singapur       |                 5 |   186541.68 |
+| Rotterdam     | Singapur       |                 7 |   211562.51 |
+| Manzanillo    | Valencia       |                 6 |   174120.39 |
+| Hamburgo      | Manzanillo     |                 5 |   111465.92 |
+| Hamburgo      | Valencia       |                 3 |    68042.29 |
+| Busan         | Hamburgo       |                 5 |   159313.88 |
+| Cartagena     | Manzanillo     |                 5 |   181813.88 |
+| Shanghái      | Manzanillo     |                 2 |    66182.33 |
+| Singapur      | Manzanillo     |                 6 |   160998.18 |
+| Hamburgo      | Los Ángeles    |                 5 |   158583.46 |
+| Hamburgo      | Cartagena      |                 5 |   158401.53 |
+| Santos        | Shanghái       |                 3 |   114328.76 |
+| Shanghái      | Rotterdam      |                 2 |    47604.80 |
+| Valencia      | Cartagena      |                 3 |    65680.23 |
+| Hamburgo      | Rotterdam      |                 5 |   117289.41 |
+| Manzanillo    | Los Ángeles    |                 3 |   122559.89 |
+| Shanghái      | Valencia       |                 4 |   128174.51 |
+| Santos        | Manzanillo     |                 5 |   172894.07 |
+| Busan         | Santos         |                 5 |   139812.00 |
+| Los Ángeles   | Shanghái       |                 3 |   103490.32 |
+| Hamburgo      | Busan          |                 8 |   243554.96 |
+| Valencia      | Hamburgo       |                 5 |   131118.21 |
+| Rotterdam     | Santos         |                 3 |    97605.22 |
+| Los Ángeles   | Singapur       |                 4 |   139904.73 |
+| Manzanillo    | Singapur       |                 8 |   188498.95 |
+| Rotterdam     | Hamburgo       |                 5 |   138130.81 |
+| Cartagena     | Hamburgo       |                 4 |    69727.93 |
+| Hamburgo      | Santos         |                 4 |    94854.32 |
+| Los Ángeles   | Hamburgo       |                 6 |   206982.24 |
+| Los Ángeles   | Santos         |                 2 |    42126.46 |
+| Valencia      | Rotterdam      |                 2 |    60007.39 |
+| Shanghái      | Singapur       |                 1 |    17632.50 |
+| Singapur      | Shanghái       |                 2 |    77489.99 |
+| Valencia      | Shanghái       |                 5 |   142073.14 |
+| Manzanillo    | Hamburgo       |                 2 |    65301.00 |
+| Valencia      | Los Ángeles    |                 6 |   165975.83 |
+| Hamburgo      | Shanghái       |                 5 |   134829.98 |
+| Busan         | Cartagena      |                 6 |   132899.07 |
+| Busan         | Los Ángeles    |                 3 |    77029.79 |
+| Singapur      | Rotterdam      |                 3 |   104959.43 |
+| Santos        | Los Ángeles    |                 1 |    28310.51 |
+| Busan         | Singapur       |                 4 |    93630.78 |
+| Cartagena     | Busan          |                 2 |    29716.65 |
+| Singapur      | Valencia       |                 2 |    42403.09 |
+| Busan         | Shanghái       |                 5 |   179988.01 |
+| Singapur      | Cartagena      |                 6 |   202448.57 |
+| Rotterdam     | Busan          |                 4 |   164262.86 |
+| Los Ángeles   | Rotterdam      |                 2 |    85141.24 |
+| Santos        | Rotterdam      |                 2 |    64274.98 |
+| Singapur      | Los Ángeles    |                 2 |    48540.53 |
+| Manzanillo    | Shanghái       |                 1 |    25538.43 |
+| Busan         | Manzanillo     |                 2 |    74652.88 |
+| Shanghái      | Busan          |                 2 |    40396.89 |
+| Cartagena     | Los Ángeles    |                 5 |   200422.17 |
+| Valencia      | Manzanillo     |                 4 |   102366.68 |
+| Singapur      | Busan          |                 3 |    31803.42 |
+| Cartagena     | Singapur       |                 3 |   117023.57 |
+| Shanghái      | Santos         |                 8 |   279573.50 |
+| Cartagena     | Valencia       |                 4 |    86298.38 |
+| Manzanillo    | Santos         |                 5 |    73908.47 |
+| Cartagena     | Santos         |                 3 |    49680.96 |
+| Los Ángeles   | Cartagena      |                 4 |    67160.71 |
+| Los Ángeles   | Busan          |                 3 |    68273.01 |
+| Rotterdam     | Valencia       |                 4 |    78506.68 |
+| Hamburgo      | Singapur       |                 3 |    87872.67 |
+| Manzanillo    | Cartagena      |                 5 |   117008.54 |
+| Santos        | Singapur       |                 5 |   107880.03 |
+| Shanghái      | Los Ángeles    |                 3 |   116232.39 |
+| Manzanillo    | Busan          |                 2 |    80768.30 |
+| Valencia      | Busan          |                 1 |    31893.26 |
+| Rotterdam     | Shanghái       |                 2 |    47461.17 |
+| Shanghái      | Cartagena      |                 3 |   116468.37 |
+| Rotterdam     | Cartagena      |                 1 |    25122.20 |
+| Singapur      | Santos         |                 4 |   151984.00 |
+| Busan         | Valencia       |                 2 |    64979.29 |
+| Santos        | Busan          |                 1 |    16300.48 |
+| Santos        | Valencia       |                 3 |    72478.03 |
+| Los Ángeles   | Valencia       |                 1 |    49832.16 |
+| Shanghái      | Hamburgo       |                 1 |     9436.46 |
+| Valencia      | Santos         |                 2 |    43480.85 |
+| Santos        | Cartagena      |                 2 |    27004.76 |
+| Rotterdam     | Manzanillo     |                 1 |    11312.59 |
+| Santos        | Hamburgo       |                 1 |    22364.91 |
+| Los Ángeles   | Manzanillo     |                 1 |    35664.96 |
+| Cartagena     | Shanghái       |                 1 |    13926.21 |
+| Rotterdam     | Los Ángeles    |                 1 |    28427.35 |
+| Singapur      | Hamburgo       |                 1 |    13990.57 |
+| Cartagena     | Rotterdam      |                 1 |    40039.03 |
++---------------+----------------+-------------------+-------------+
+
+Según los datos podríamos señalar que las rutas más costosas se concentran en corredores intercontinentales, 
+especialmente entre Asia, Europa y Latinoamérica. Aunque tienen alta demanda, 
+sus costos acumulados muestran que están generando un impacto significativo en la rentabilidad global de la operación.
+ 
+2. ¿Qué barcos presentan más retrasos en sus operaciones?
++----------+-----------------------+----------------+-------------------+--------------+
+| barco_id | nombre                | total_retrasos | total_operaciones | pct_retrasos |
++----------+-----------------------+----------------+-------------------+--------------+
+|       20 | MV Pacific Carrier    |              4 |                 9 |        44.44 |
+|        7 | MV Ocean Wind         |              3 |                 5 |        60.00 |
+|       28 | MV Horizon Spirit     |              3 |                 5 |        60.00 |
+|       30 | MV Atlantic Navigator |              3 |                 6 |        50.00 |
+|       39 | MV Horizon Star       |              3 |                 6 |        50.00 |
+|       16 | MV Aurora Trader      |              3 |                 7 |        42.86 |
+|       27 | MV Aurora Explorer    |              3 |                 9 |        33.33 |
+|       25 | MV Pacific Star       |              2 |                 3 |        66.67 |
+|        3 | MV Aurora Wind        |              2 |                 4 |        50.00 |
+|       41 | MV Aurora Explorer    |              2 |                 5 |        40.00 |
+|       33 | MV Neptune Wind       |              2 |                 5 |        40.00 |
+|        8 | MV Horizon Navigator  |              2 |                 5 |        40.00 |
+|        5 | MV Horizon Star       |              2 |                 6 |        33.33 |
+|       49 | MV Sea Trader         |              2 |                 7 |        28.57 |
+|       18 | MV Atlantic Trader    |              2 |                 8 |        25.00 |
+|       44 | MV Atlantic Navigator |              2 |                 9 |        22.22 |
+|       12 | MV Ocean Carrier      |              2 |                 9 |        22.22 |
+|        1 | MV Aurora Explorer    |              2 |                 9 |        22.22 |
+|       10 | MV Ocean Explorer     |              2 |                 9 |        22.22 |
+|        9 | MV Sea Spirit         |              2 |                 9 |        22.22 |
+|       17 | MV Ocean Trader       |              1 |                 3 |        33.33 |
+|       23 | MV Sea Voyager        |              1 |                 3 |        33.33 |
+|       45 | MV Aurora Carrier     |              1 |                 5 |        20.00 |
+|       13 | MV Pacific Explorer   |              1 |                 5 |        20.00 |
+|       43 | MV Ocean Star         |              1 |                 5 |        20.00 |
+|       32 | MV Pacific Spirit     |              1 |                 5 |        20.00 |
+|        2 | MV Neptune Explorer   |              1 |                 5 |        20.00 |
+|       21 | MV Atlantic Wind      |              1 |                 6 |        16.67 |
+|       22 | MV Sea Spirit         |              1 |                 6 |        16.67 |
+|       29 | MV Global Voyager     |              1 |                 6 |        16.67 |
+|       38 | MV Neptune Carrier    |              1 |                 7 |        14.29 |
+|       46 | MV Pacific Voyager    |              1 |                 8 |        12.50 |
+|       31 | MV Ocean Voyager      |              1 |                 9 |        11.11 |
+|        6 | MV Sea Carrier        |              1 |                 9 |        11.11 |
+|       48 | MV Global Wind        |              1 |                10 |        10.00 |
+|       26 | MV Global Navigator   |              0 |                 5 |         0.00 |
+|       37 | MV Horizon Carrier    |              0 |                 6 |         0.00 |
+|       36 | MV Sea Navigator      |              0 |                 7 |         0.00 |
+|       35 | MV Global Voyager     |              0 |                 8 |         0.00 |
+|       40 | MV Sea Explorer       |              0 |                 1 |         0.00 |
+|       34 | MV Neptune Explorer   |              0 |                 4 |         0.00 |
+|       42 | MV Atlantic Navigator |              0 |                 5 |         0.00 |
+|       24 | MV Aurora Explorer    |              0 |                 2 |         0.00 |
+|       19 | MV Neptune Navigator  |              0 |                 7 |         0.00 |
+|       15 | MV Ocean Trader       |              0 |                 4 |         0.00 |
+|       14 | MV Aurora Spirit      |              0 |                 5 |         0.00 |
+|       47 | MV Aurora Trader      |              0 |                 6 |         0.00 |
+|       11 | MV Sea Star           |              0 |                 3 |         0.00 |
+|        4 | MV Pacific Carrier    |              0 |                 5 |         0.00 |
+|       50 | MV Aurora Voyager     |              0 |                 5 |         0.00 |
++----------+-----------------------+----------------+-------------------+--------------+
+En este caso los barcos con mayor proporción de retrasos son principalmente:
+
+**MV Pacific Carrier**
+
+**MV Ocean Wind**
+
+**MV Horizon Spirit**
+
+**MV Atlantic Navigator** 
+
+**MV Horizon Star**. 
+
+Algunos superan el **50% de retrasos**, lo que indica problemas consistentes en su operación, mantenimiento o programación. 
+Estos barcos están afectando directamente la puntualidad y la eficiencia del puerto.
