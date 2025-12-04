@@ -1,0 +1,27 @@
+Conclusión
+  
+El análisis de la operación portuaria revela que los costos, tiempos de tránsito y desempeño operativo están fuertemente determinados por el tipo de carga, 
+la ruta y la intensidad de uso de cada barco. Se evidencian patrones consistentes donde ciertos tipos de contenedores y rutas intercontinentales concentran los mayores costos y tiempos,
+mientras que algunos barcos destacan por un costo promedio elevado pese a realizar menos operaciones. En conjunto, los resultados permiten comprender cómo interactúan estos factores
+dentro del sistema logístico y muestran una estructura operativa marcada por diferencias significativas en eficiencia y demanda entre barcos, contenedores y rutas.
+
+Recomendaciones
+  
+1. Cambiar el tipo de barco asignado en ciertas rutas criticas:** usar embarcaciones con mejor rendimiento de combustible o mayor capacidad TEU para bajar el costo por operación.
+  
+2. Reducción de escalas en puertos caros: eliminar o sustituir escalas intermedias que aumenten tarifas portuarias y tiempos de atraque.
+  
+3. Programar mantenimiento preventivo prioritario para los barcos con mayor porcentaje de retrasos (arriba de 40%). Esto ataca fallas mecánicas que suelen generar retrasos recurrentes.
+  
+4. Revisar las rutas asignadas a estos barcos: en muchos casos, retrasos altos vienen de operar en puertos congestionados o rutas largas que exceden la capacidad del barco.
+  
+5. Se recomienda analizar las operaciones específicas asociadas a los Open Top** para identificar qué parte del proceso encarece.
+  
+6. Optimizar la asignación de barcos para estas rutas críticas, utilizando embarcaciones con: Mayor velocidad de crucero, Mejor eficiencia de combustible, Menor necesidad de mantenimiento 
+  durante el trayecto.
+  
+7. Implementar una auditoría de costos por operación enfocada en estos barcos que destacan por costos promedio altos.
+
+Dashboard
+
+https://app.powerbi.com/links/LkEdLikIO6?ctid=ba5b0a4d-6c68-4ac3-9d6e-c5b5a12a9d69&pbi_source=linkShare
