@@ -1,4 +1,3 @@
-
 Procederemos a crear las tablas  
 
 -- Tabla barcos -- 
@@ -192,15 +191,220 @@ sus costos acumulados muestran que están generando un impacto significativo en 
 +----------+-----------------------+----------------+-------------------+--------------+
 En este caso los barcos con mayor proporción de retrasos son principalmente:
 
-**MV Pacific Carrier**
+MV Pacific Carrier
+MV Ocean Wind
+MV Horizon Spirit
+MV Atlantic Navigator
+MV Horizon Star
 
-**MV Ocean Wind**
-
-**MV Horizon Spirit**
-
-**MV Atlantic Navigator** 
-
-**MV Horizon Star**. 
-
-Algunos superan el **50% de retrasos**, lo que indica problemas consistentes en su operación, mantenimiento o programación. 
+Algunos superan el 50% de retrasos, lo que indica problemas consistentes en su operación, mantenimiento o programación. 
 Estos barcos están afectando directamente la puntualidad y la eficiencia del puerto.
+
+3. ¿Qué tipo de contenedores generan más costos operativos?
+SELECT 
+    c.tipo,
+    COUNT(op.operacion_id) AS total_operaciones,
+    SUM(op.costo_operacion) AS costo_total
+FROM contenedores c
+LEFT JOIN operaciones_portuarias op
+    ON op.contenedor_id = c.contenedor_id
+GROUP BY c.tipo
+ORDER BY costo_total DESC;
+
++----------+-------------------+-------------+
+| tipo     | total_operaciones | costo_total |
++----------+-------------------+-------------+
+| Open Top |                98 |  2762472.59 |
+| 20ft     |                78 |  2434265.40 |
+| Reefer   |                70 |  1772731.73 |
+| 40ft     |                54 |  1576343.82 |
++----------+-------------------+-------------+
+Los contenedores Open Top son los que generan los mayores costos operativos, superando a todos los demás tipos tanto
+en número de operaciones como en costo total Esto sugiere que su manipulacióny transporte implica exigencias adicionales 
+que incrementan el gasto.
+
+4. ¿Qué puertos generan mayor tiempo de tránsito?
+SELECT
+puerto_origen,
+puerto_destino,
+ROUND(AVG(DATEDIFF(fecha_arribo, fecha_salida)), 0) AS tiempo_promedio_dias
+FROM operaciones_portuarias
+WHERE fecha_arribo IS NOT NULL
+GROUP BY puerto_origen, puerto_destino
+ORDER BY tiempo_promedio_dias DESC;
++---------------+----------------+----------------------+
+| puerto_origen | puerto_destino | tiempo_promedio_dias |
++---------------+----------------+----------------------+
+| Valencia      | Santos         |                   25 |
+| Santos        | Busan          |                   25 |
+| Rotterdam     | Santos         |                   24 |
+| Santos        | Los Ángeles    |                   23 |
+| Los Ángeles   | Manzanillo     |                   21 |
+| Manzanillo    | Singapur       |                   20 |
+| Hamburgo      | Los Ángeles    |                   20 |
+| Rotterdam     | Valencia       |                   20 |
+| Shanghái      | Valencia       |                   20 |
+| Valencia      | Los Ángeles    |                   20 |
+| Manzanillo    | Shanghái       |                   20 |
+| Singapur      | Cartagena      |                   19 |
+| Santos        | Cartagena      |                   19 |
+| Hamburgo      | Cartagena      |                   19 |
+| Hamburgo      | Rotterdam      |                   19 |
+| Cartagena     | Manzanillo     |                   18 |
+| Los Ángeles   | Valencia       |                   18 |
+| Manzanillo    | Santos         |                   18 |
+| Valencia      | Cartagena      |                   18 |
+| Manzanillo    | Los Ángeles    |                   18 |
+| Singapur      | Shanghái       |                   18 |
+| Los Ángeles   | Shanghái       |                   18 |
+| Shanghái      | Los Ángeles    |                   18 |
+| Busan         | Manzanillo     |                   17 |
+| Busan         | Singapur       |                   17 |
+| Cartagena     | Los Ángeles    |                   17 |
+| Rotterdam     | Busan          |                   17 |
+| Los Ángeles   | Santos         |                   17 |
+| Valencia      | Rotterdam      |                   17 |
+| Busan         | Shanghái       |                   17 |
+| Hamburgo      | Shanghái       |                   17 |
+| Valencia      | Hamburgo       |                   16 |
+| Cartagena     | Singapur       |                   16 |
+| Hamburgo      | Singapur       |                   16 |
+| Singapur      | Santos         |                   16 |
+| Valencia      | Shanghái       |                   16 |
+| Manzanillo    | Hamburgo       |                   16 |
+| Manzanillo    | Busan          |                   16 |
+| Shanghái      | Santos         |                   16 |
+| Singapur      | Manzanillo     |                   16 |
+| Busan         | Valencia       |                   15 |
+| Busan         | Hamburgo       |                   15 |
+| Cartagena     | Busan          |                   15 |
+| Los Ángeles   | Busan          |                   15 |
+| Santos        | Manzanillo     |                   15 |
+| Rotterdam     | Los Ángeles    |                   15 |
+| Los Ángeles   | Hamburgo       |                   15 |
+| Manzanillo    | Cartagena      |                   15 |
+| Valencia      | Manzanillo     |                   15 |
+| Hamburgo      | Busan          |                   15 |
+| Valencia      | Busan          |                   15 |
+| Valencia      | Singapur       |                   14 |
+| Busan         | Los Ángeles    |                   14 |
+| Singapur      | Los Ángeles    |                   14 |
+| Shanghái      | Manzanillo     |                   14 |
+| Santos        | Valencia       |                   14 |
+| Cartagena     | Hamburgo       |                   14 |
+| Hamburgo      | Manzanillo     |                   14 |
+| Manzanillo    | Valencia       |                   14 |
+| Singapur      | Rotterdam      |                   14 |
+| Rotterdam     | Singapur       |                   14 |
+| Busan         | Cartagena      |                   14 |
+| Santos        | Singapur       |                   13 |
+| Shanghái      | Cartagena      |                   13 |
+| Cartagena     | Shanghái       |                   12 |
+| Cartagena     | Valencia       |                   12 |
+| Singapur      | Valencia       |                   12 |
+| Rotterdam     | Hamburgo       |                   12 |
+| Cartagena     | Rotterdam      |                   12 |
+| Rotterdam     | Cartagena      |                   12 |
+| Shanghái      | Rotterdam      |                   12 |
+| Santos        | Shanghái       |                   12 |
+| Santos        | Rotterdam      |                   12 |
+| Santos        | Hamburgo       |                   12 |
+| Hamburgo      | Valencia       |                   12 |
+| Los Ángeles   | Cartagena      |                   11 |
+| Los Ángeles   | Rotterdam      |                   11 |
+| Los Ángeles   | Singapur       |                   11 |
+| Busan         | Santos         |                   11 |
+| Singapur      | Busan          |                   11 |
+| Rotterdam     | Shanghái       |                   10 |
+| Hamburgo      | Santos         |                   10 |
+| Cartagena     | Santos         |                    9 |
+| Shanghái      | Busan          |                    8 |
+| Shanghái      | Singapur       |                    7 |
+| Singapur      | Hamburgo       |                    7 |
+| Rotterdam     | Manzanillo     |                    6 |
+| Shanghái      | Hamburgo       |                    5 |
++---------------+----------------+----------------------+
+
+Podemos observar que las rutas con mayor tiempo promedio de tránsito se concentran principalmente en conexiones entre:
+Sudamérica (Santos)
+Asia (Busan, Shanghái)
+Norteamérica (Los Ángeles)
+
+Alcanzando tiempos superiores a 23–25 días. Esto indica que los tramos intercontinentales entre estos puertos son los que
+más impactan la eficiencia logística.
+
+5. ¿Qué barcos generan el mayor costo total en operaciones y cuántas operaciones realizan?
+SELECT 
+  b.barco_id,
+  b.nombre,
+  COUNT(op.operacion_id) AS total_operaciones,
+  COALESCE(SUM(op.costo_operacion), 0) AS costo_total
+FROM barcos b
+LEFT JOIN operaciones_portuarias op
+  ON op.barco_id = b.barco_id
+GROUP BY b.barco_id, b.nombre
+ORDER BY costo_total DESC, total_operaciones DESC;
+
++----------+-----------------------+-------------------+-------------+
+| barco_id | nombre                | total_operaciones | costo_total |
++----------+-----------------------+-------------------+-------------+
+|        1 | MV Aurora Explorer    |                 9 |   329264.39 |
+|       48 | MV Global Wind        |                10 |   305696.53 |
+|       12 | MV Ocean Carrier      |                 9 |   304568.92 |
+|        6 | MV Sea Carrier        |                 9 |   277479.05 |
+|        9 | MV Sea Spirit         |                 9 |   259244.91 |
+|       27 | MV Aurora Explorer    |                 9 |   241484.49 |
+|       31 | MV Ocean Voyager      |                 9 |   241340.37 |
+|       36 | MV Sea Navigator      |                 7 |   234771.43 |
+|       38 | MV Neptune Carrier    |                 7 |   227619.68 |
+|       44 | MV Atlantic Navigator |                 9 |   225356.43 |
+|       19 | MV Neptune Navigator  |                 7 |   214496.68 |
+|       21 | MV Atlantic Wind      |                 6 |   213749.12 |
+|       18 | MV Atlantic Trader    |                 8 |   206856.76 |
+|       37 | MV Horizon Carrier    |                 6 |   204498.88 |
+|       46 | MV Pacific Voyager    |                 8 |   201176.54 |
+|        2 | MV Neptune Explorer   |                 5 |   200018.83 |
+|       35 | MV Global Voyager     |                 8 |   199944.74 |
+|       20 | MV Pacific Carrier    |                 9 |   197242.32 |
+|       49 | MV Sea Trader         |                 7 |   195998.22 |
+|       10 | MV Ocean Explorer     |                 9 |   191594.89 |
+|       16 | MV Aurora Trader      |                 7 |   188144.63 |
+|       29 | MV Global Voyager     |                 6 |   177863.38 |
+|       28 | MV Horizon Spirit     |                 5 |   175031.56 |
+|       42 | MV Atlantic Navigator |                 5 |   169130.10 |
+|       30 | MV Atlantic Navigator |                 6 |   168988.17 |
+|       22 | MV Sea Spirit         |                 6 |   166864.46 |
+|        3 | MV Aurora Wind        |                 4 |   157693.79 |
+|       50 | MV Aurora Voyager     |                 5 |   154507.92 |
+|       13 | MV Pacific Explorer   |                 5 |   153340.65 |
+|        4 | MV Pacific Carrier    |                 5 |   153029.14 |
+|       34 | MV Neptune Explorer   |                 4 |   151023.24 |
+|       26 | MV Global Navigator   |                 5 |   139774.76 |
+|       25 | MV Pacific Star       |                 3 |   138598.84 |
+|        7 | MV Ocean Wind         |                 5 |   138574.78 |
+|       45 | MV Aurora Carrier     |                 5 |   137597.92 |
+|       14 | MV Aurora Spirit      |                 5 |   132640.34 |
+|       43 | MV Ocean Star         |                 5 |   129761.55 |
+|       39 | MV Horizon Star       |                 6 |   122832.37 |
+|       41 | MV Aurora Explorer    |                 5 |   119045.97 |
+|       11 | MV Sea Star           |                 3 |   114872.60 |
+|        5 | MV Horizon Star       |                 6 |   113719.72 |
+|       32 | MV Pacific Spirit     |                 5 |   113215.62 |
+|       47 | MV Aurora Trader      |                 6 |   108442.32 |
+|       33 | MV Neptune Wind       |                 5 |   102445.80 |
+|       17 | MV Ocean Trader       |                 3 |    96956.91 |
+|        8 | MV Horizon Navigator  |                 5 |    93978.84 |
+|       23 | MV Sea Voyager        |                 3 |    82793.55 |
+|       15 | MV Ocean Trader       |                 4 |    72137.02 |
+|       24 | MV Aurora Explorer    |                 2 |    54366.03 |
+|       40 | MV Sea Explorer       |                 1 |    46038.38 |
++----------+-----------------------+-------------------+-------------+
+
+Los barcos con mayor costo promedio por operación no son necesariamente los que realizan más viajes, 
+sino aquellos con pocas operaciones pero costos acumulados muy elevados, como:
+MV Pacific Star (3 operaciones → $46.199 por operación)
+MV Sea Explorer (1 operación → $46.038 por operación)
+MV Neptune Explorer (5 operaciones → $40.003 por operación)
+
+Esto indica que varios barcos tienen operaciones puntuales extremadamente costosas, lo que sugiere problemas
+como sobrecostos por distancia, puertos costosos, recargos o baja eficiencia logística.
